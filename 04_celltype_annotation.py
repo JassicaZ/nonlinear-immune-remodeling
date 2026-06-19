@@ -3,10 +3,10 @@ import numpy as np
 import os
 import celltypist
 from celltypist import models
-import time  # Import time module
+import time  
 
 # Set the folder path
-file_path = '/home/wengjpgroup/zhengjy111/workplace/all_age/celltypist/result'
+file_path = '../result/1_preprocess/celltypist/'
 
 date = '250520_customized'
 folder_path = file_path + '/{}'.format(date)
@@ -16,12 +16,12 @@ if not os.path.exists(folder_path):
     print("Folder has been created.")
 else:
     print("Folder already exists.")
-sc.settings.figdir = "/home/wengjpgroup/zhengjy111/workplace/all_age/celltypist/result/{}/".format(date)
+sc.settings.figdir = "../result/1_preprocess/{}/".format(date)
 
 # Model training
 adata_aida = sc.read('./data/AIDA_raw_with-meta.h5ad')  # From Kock, Kian Hong et al. Cell 2025, available at https://cellxgene.cziscience.com/collections/ced320a1-29f3-47c1-a735-513c7084d508
 adata_aida.var.index = adata_aida.var['feature_name'].str.replace(r'_ENSG.*$', '', regex=True)
-sc.pp.normalize_total(adata_aida, target_sum=10**4)  # Normalize to 10,000 counts per cell
+sc.pp.normalize_total(adata_aida, target_sum=10**4)  
 sc.pp.log1p(adata_aida)
 adata_aida.var.index.name = None
 
@@ -45,13 +45,13 @@ model = celltypist.train(
 
 # Save the model
 print(f"Time elapsed: {(t_end - t_start)/60} minutes")
-model.write('./data/250521train/model_from_AIDA_03_v2.pkl')
+model.write('./data/train/model_from_AIDA_03_v2.pkl')
 
 # Load the trained model
-model_3 = models.Model.load(model="./data/250521train/model_from_AIDA_03_v2.pkl")
+model_3 = models.Model.load(model="./data/train/model_from_AIDA_03_v2.pkl")
 
 # Preprocess discovery cohort single-cell data
-adata_raw = sc.read('/home/wengjpgroup/zhengjy111/workplace/all_age/celltypist/data/250513_inner_QC.h5ad')
+adata_raw = sc.read('../result/1_preprocess/preprocessed/inner_QC.h5ad')
 adata_celltypist = adata_raw.copy()  # Make a copy of the AnnData object
 adata_celltypist.X = adata_raw.layers["counts"]  # Set adata.X to raw counts
 sc.pp.normalize_total(adata_celltypist, target_sum=10**4)  # Normalize to 10,000 counts per cell
@@ -60,7 +60,7 @@ adata_celltypist.X = adata_celltypist.X.toarray()  # Convert sparse matrix to de
 adata_celltypist.write(file_path + '/{}/{}_adata_celltypist.h5ad'.format(date, date))
 
 # Load neighbors
-adata = sc.read('/home/wengjpgroup/zhengjy111/workplace/all_age/celltypist/data/250513_harmony_35_27_withcli.h5ad')
+adata = sc.read('../result/1_preprocess/preprocessed/harmony_inner.h5ad')
 adata_celltypist.uns['neighbors'] = adata.uns['neighbors']
 adata_celltypist.obsp['connectivities'] = adata.obsp['connectivities']
 adata_celltypist.obsp['distances'] = adata.obsp['distances']
@@ -82,7 +82,7 @@ print("End time: ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(end_time))
 print(f"Annotation computation time: {end_time - start_time} seconds")  # Print elapsed time
 
 # Preprocess validation cohort single-cell data
-adata_raw = sc.read('/home/wengjpgroup/wp2025/721shujuchuli/250721/250721_inner_QC.h5ad')
+adata_raw = sc.read('../result/1_preprocess/validation/PJ_QC.h5ad')
 adata_celltypist = adata_raw.copy()  # Make a copy of the AnnData object
 del adata_raw
 sc.pp.normalize_total(adata_celltypist, target_sum=10**4)  # Normalize to 10,000 counts per cell
@@ -91,7 +91,7 @@ adata_celltypist.X = adata_celltypist.X.toarray()  # Convert sparse matrix to de
 adata_celltypist.write(file_path + '/{}/{}_adata_celltypist.h5ad'.format(date, date))
 
 # Load neighbors from another AnnData object
-adata = sc.read('/home/wengjpgroup/zhengjy111/workplace/all_age/celltypist/data/pj/250721_harmony_35_30_1.3_withcli.h5ad')
+adata = sc.read('../result/1_preprocess/validation/PJ_QC_NORM_batch_UMAP.h5ad')
 adata_celltypist.uns['neighbors'] = adata.uns['neighbors']
 adata_celltypist.obsp['connectivities'] = adata.obsp['connectivities']
 adata_celltypist.obsp['distances'] = adata.obsp['distances']

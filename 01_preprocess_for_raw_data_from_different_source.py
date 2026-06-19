@@ -92,6 +92,6 @@ for pub in ['P23']:
             adata_merge = ad.concat([adata_merge, adata], join='outer')  # Use outer join to include all genes
 
 # Save the merged dataset
-adata_merge.write('../data/adata/raw_data/P23_raw.h5ad')
+adata_merge.write('../result/1_preprocess/raw_data/P23_raw.h5ad')
 
 

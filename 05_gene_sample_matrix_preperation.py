@@ -9,9 +9,9 @@ sc.logging.print_header()
 sc.settings.set_figure_params(dpi=80, facecolor='white')
 
 
-adata=sc.read('../result/1_preprocess/adata/discovery_celltypist_annotated.h5ad')
+adata=sc.read('../result/1_preprocess/celltypist/discovery_celltypist_annotated.h5ad')
 adata.obs = adata.obs.rename(columns={'predicted_labels':'celltype'})
-raw=sc.read('../result/1_preprocess/adata/inner_QC.h5ad')
+raw=sc.read('../result/1_preprocess/preprocessed/inner_QC.h5ad')
 raw.obs=adata.obs
 
 del(adata)
